@@ -10,7 +10,29 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100713113845) do
+ActiveRecord::Schema.define(:version => 20101110233740) do
+
+  create_table "accounts", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "subscription_plans", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "subscriptions", :force => true do |t|
+    t.integer  "account_id"
+    t.integer  "subscription_plan_id"
+    t.integer  "cc_number"
+    t.integer  "cc_cvc"
+    t.date     "cc_valid_thru"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users", :force => true do |t|
     t.string   "email",                               :default => "", :null => false
@@ -30,6 +52,7 @@ ActiveRecord::Schema.define(:version => 20100713113845) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "full_name"
+    t.integer  "account_id"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

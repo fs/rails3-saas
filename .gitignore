@@ -1,4 +1,5 @@
 .bundle
+nbproject/
 db/*.sqlite3
 log/*.log
 tmp/*
