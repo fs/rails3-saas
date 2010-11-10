@@ -31,7 +31,7 @@ Application currently based on Rails 3 stable branch.
 * clone repository
 * tune gemspec name in the .rvmrc
 * tune config/config.yml
-* tune in the sources application name: s/Rails3Base/YouApplicationName/g
+* tune in the sources application name: s/Rails3Saas/YouApplicationName/g
 * tune config/database.yml.example and copy it to the config/database.yml
 * bundle install
 * rake cucumber

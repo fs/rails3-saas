@@ -1,4 +1,4 @@
-Rails3Base::Application.routes.draw do
+Rails3Saas::Application.routes.draw do
   devise_for :users
 
   as :user do
