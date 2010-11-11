@@ -30,4 +30,5 @@ group :test, :development do
   gem 'rails_best_practices', '0.4.5'
   gem 'rails3-generators', '0.14.0'
   gem 'rcov', '0.9.9'
+  gem 'rails-erd', '0.4.1'
 end
