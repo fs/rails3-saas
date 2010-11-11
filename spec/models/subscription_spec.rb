@@ -5,7 +5,7 @@ describe Subscription do
   it { should belong_to :plan }
   it { should have_one :profile }
 
-  describe 'on create' do
+  context 'on create' do
     context 'with valid params' do
       it 'should create new Subscription instance'
       it 'should create new SubscriptionProfile instance associated with this subscription'

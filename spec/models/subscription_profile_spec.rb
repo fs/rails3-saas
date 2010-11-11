@@ -3,7 +3,7 @@ require 'spec_helper'
 describe SubscriptionProfile do
   it { should belong_to :subscription }
 
-  describe 'on create' do
+  context 'on create' do
     context 'with valid params' do
       it 'should store card in the payment gateway'
       it 'should save card id from the payment gateway'

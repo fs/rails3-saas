@@ -5,7 +5,7 @@ describe Account do
   it { should have_one :subscription }
   it { should have_many :users }
 
-  describe 'on create' do
+  context 'on create' do
     context 'with valid params' do
       context 'when User does not exists' do
         it 'should create new Account instance'
