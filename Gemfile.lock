@@ -194,7 +194,7 @@ DEPENDENCIES
   launchy (= 0.3.7)
   mysql (= 2.8.1)
   rails (= 3.0.0)
-  rails-erd
+  rails-erd (= 0.4.1)
   rails3-generators (= 0.14.0)
   rails_best_practices (= 0.4.5)
   rcov (= 0.9.9)
