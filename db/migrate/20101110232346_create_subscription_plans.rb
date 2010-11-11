@@ -1,6 +1,6 @@
 class CreateSubscriptionPlans < ActiveRecord::Migration
   def self.up
-    create_table(:subscription_plans) do |t|
+    create_table :subscription_plans do |t|
       t.string :name
       t.timestamps      
     end

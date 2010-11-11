@@ -10,10 +10,10 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101110233740) do
+ActiveRecord::Schema.define(:version => 20101111102953) do
 
   create_table "accounts", :force => true do |t|
-    t.integer  "user_id"
+    t.integer  "owner_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -24,12 +24,21 @@ ActiveRecord::Schema.define(:version => 20101110233740) do
     t.datetime "updated_at"
   end
 
+  create_table "subscription_profiles", :force => true do |t|
+    t.integer  "subscription_id"
+    t.string   "payment_auth_id"
+    t.string   "card_number"
+    t.date     "card_expired_on"
+    t.string   "card_holder_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "subscriptions", :force => true do |t|
     t.integer  "account_id"
     t.integer  "subscription_plan_id"
-    t.integer  "cc_number"
-    t.integer  "cc_cvc"
-    t.date     "cc_valid_thru"
+    t.text     "last_charge_error"
+    t.datetime "next_renewal_at"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
