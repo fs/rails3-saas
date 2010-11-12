@@ -10,7 +10,7 @@ class AccountsController < ApplicationController
     @account = Account.new(params[:account])
     if @account.save
       flash[:notice] = "Successfully registered."
-      redirect_to dashboard_url
+      redirect_to root_path
     else
       render :action => 'new'
     end
