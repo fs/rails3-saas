@@ -12,6 +12,7 @@ gem 'tabletastic', '0.2.0.pre5'
 gem 'flutie', '1.1.1'
 gem 'inherited_resources', '1.1.2'
 gem 'will_paginate', '3.0.pre2'
+gem 'activemerchant', '1.9.0'
 
 group :test, :development do
   gem 'sqlite3-ruby', '1.3.1'
