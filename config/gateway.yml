@@ -1,0 +1,16 @@
+defaults: &defaults
+  name: bogus
+  test: true
+  options:
+    login: login
+    password: 123456
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
+  test: false
