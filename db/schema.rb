@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(:version => 20101111102953) do
   create_table "subscription_profiles", :force => true do |t|
     t.integer  "subscription_id"
     t.string   "payment_auth_id"
+    t.string   "card_type"
     t.string   "card_number"
     t.date     "card_expired_on"
     t.string   "card_holder_name"
