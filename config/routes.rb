@@ -8,6 +8,8 @@ Rails3Saas::Application.routes.draw do
   end
 
   resource :accounts
+
+  map.dashboard "/dashboard", :controller => "dashboard", :action => "index"
   
   root :to => 'dashboard#index'
 end
