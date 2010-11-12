@@ -1,2 +1,13 @@
 <%= semantic_form_for @account do |f| %>
+  <%= f.semantic_fields_for :owner do |o| %>
+    <%= o.input :email %>
+    <%= o.inputs do %>
+      <%= o.input :password, :required => true %>
+      <%= o.input :password_confirmation, :required => true %>
+    <% end %>
+  <% end %>
+  <%= f.semantic_fields_for :subscription do |q| %>
+    <%=  q.select :subscription_plan_id, options_from_collection_for_select(SubscriptionPlan.all, "id", "name") %>
+  <% end %>
+  <%= f.buttons %>
 <% end %>
