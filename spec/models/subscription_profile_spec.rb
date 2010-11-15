@@ -76,20 +76,39 @@ describe SubscriptionProfile do
     context 'with valid card' do
       before do
         @profile.card = Factory(:credit_card)
-        @profile.save
+        @saving = lambda { @profile.save }
       end
 
-      it { should be_valid }
-      it { should be_persisted }
+      context 'when store in the gateway success' do
+        before do
+          @saving.call
+        end
 
-      context 'payment auth' do
-        subject { @profile.payment_auth_id }
-        it { should be_present }
+        it { should be_valid }
+        it { should be_persisted }
+
+        context 'payment auth' do
+          subject { @profile.payment_auth_id }
+          it { should be_present }
+        end
+
+        context 'authorization in the gateway' do
+          subject { @profile.send(:gateway).authorize(100, @profile.payment_auth_id) }
+          it { should be_success }
+        end
       end
+      
+      context 'when store in the gateway failed' do
+        before do
+          stub(@profile.send(:gateway)).store do
+            stub(Object.new) do
+              success? { false }
+            end
+          end
+        end
 
-      context 'authorization in the gateway' do
-        subject { @profile.send(:gateway).authorize(100, @profile.payment_auth_id) }
-        it { should be_success }
+        subject { @saving }
+        it { should raise_error(SubscriptionError::StoreFailed) }
       end
     end
 

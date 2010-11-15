@@ -37,7 +37,7 @@ class SubscriptionProfile < ActiveRecord::Base
     return unless card? && card.valid?
 
     store_response = gateway.store(card)
-    raise StoreFailed.new(store_response) unless store_response.success?
+    raise SubscriptionError::StoreFailed.new(store_response) unless store_response.success?
 
     self.payment_auth_id = store_response.token
   end
@@ -55,7 +55,7 @@ class SubscriptionProfile < ActiveRecord::Base
 
     begin
       test_card!
-    rescue AuthorizationFailed => e
+    rescue SubscriptionError::AuthorizationFailed => e
       errors.add(:card, "failed test charge with: #{e.response.message}")
     end
   end
@@ -65,6 +65,14 @@ class SubscriptionProfile < ActiveRecord::Base
   def test_card!
     auth_response = gateway.authorize(100, card)
     gateway.void(auth_response.authorization) if auth_response.success?
-    raise AuthorizationFailed.new(auth_response) unless auth_response.success?
+    raise SubscriptionError::AuthorizationFailed.new(auth_response) unless auth_response.success?
+  end
+
+  def purchase_using_auth_code!(money)
+    auth_response = gateway.authorize(money, payment_auth_id)
+    raise SubscriptionError::AuthorizationFailed.new(auth_response) unless auth_response.success?
+
+    cap_response = gateway.capture(money, auth_response.authorization)
+    raise SubscriptionError::CaptureFailed.new(cap_response) unless cap_response.success?
   end
 end
