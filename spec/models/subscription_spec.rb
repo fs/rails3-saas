@@ -28,28 +28,4 @@ describe Subscription do
       it 'should set account status in the error state'
     end
   end
-
-  describe '#charge!(money)' do
-    context 'when user has payment profile' do
-      context 'when user have enought money' do
-        it 'should charge $10 using payment gateway'
-        it 'should record success transaction'
-      end
-
-      context 'when authentification failed in the gateway' do
-        it 'should record failed transaction'
-        it 'should raise Subscription::AuthorizationFailed.new(response)'
-      end
-
-      context 'when user have no enought money' do
-        it 'should record failed transaction'
-        it 'should raise Subscription::CaptureFailed.new(response)'
-      end
-    end
-
-    context 'when user has no payment profile' do
-      it 'should record failed transaction'
-      it 'should raise Subscription::EmptyPaymentProfile'
-    end
-  end
 end
