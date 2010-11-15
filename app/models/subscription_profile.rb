@@ -1,6 +1,4 @@
 class SubscriptionProfile < ActiveRecord::Base
-  belongs_to :subscription
-
   validates :payment_auth_id, :card_number, :card_type, :card_holder_name,
     :card_expired_on, :presence => true
   validate :valid_card
@@ -25,6 +23,16 @@ class SubscriptionProfile < ActiveRecord::Base
 
   def card?
     !!@card
+  end
+
+  def charge!(money)
+    auth_response = gateway.authorize(money, payment_auth_id)
+    raise SubscriptionError::AuthorizationFailed.new(auth_response) unless auth_response.success?
+
+    cap_response = gateway.capture(money, auth_response.authorization)
+    raise SubscriptionError::CaptureFailed.new(cap_response) unless cap_response.success?
+
+    cap_response
   end
 
   private
@@ -66,13 +74,5 @@ class SubscriptionProfile < ActiveRecord::Base
     auth_response = gateway.authorize(100, card)
     gateway.void(auth_response.authorization) if auth_response.success?
     raise SubscriptionError::AuthorizationFailed.new(auth_response) unless auth_response.success?
-  end
-
-  def purchase_using_auth_code!(money)
-    auth_response = gateway.authorize(money, payment_auth_id)
-    raise SubscriptionError::AuthorizationFailed.new(auth_response) unless auth_response.success?
-
-    cap_response = gateway.capture(money, auth_response.authorization)
-    raise SubscriptionError::CaptureFailed.new(cap_response) unless cap_response.success?
   end
 end

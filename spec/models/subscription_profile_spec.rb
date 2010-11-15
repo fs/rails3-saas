@@ -34,10 +34,6 @@ describe SubscriptionProfile do
     end
   end
 
-  describe 'associations' do
-    it { should belong_to :subscription }
-  end
-
   describe 'on initialize with valid card' do
     before do
       @profile = SubscriptionProfile.new(:card => Factory(:credit_card))
@@ -68,7 +64,6 @@ describe SubscriptionProfile do
   describe 'on save' do
     before do
       @profile = SubscriptionProfile.new
-      @profile.subscription = Factory(:subscription)
     end
 
     subject { @profile }
@@ -97,7 +92,7 @@ describe SubscriptionProfile do
           it { should be_success }
         end
       end
-      
+
       context 'when store in the gateway failed' do
         before do
           stub(@profile.send(:gateway)).store do
@@ -139,6 +134,47 @@ describe SubscriptionProfile do
     context 'authorization in the gateway' do
       subject { @profile.send(:gateway).authorize(100, @profile.payment_auth_id) }
       it { should_not be_success }
+    end
+  end
+
+  describe '#charge!(money)' do
+    before do
+      @profile = Factory(:subscription_profile)
+      @charge = lambda { @profile.charge!(500) } # charges $5
+    end
+
+    context 'when successfuly authorized in the gateway' do
+      context 'when successfuly caprured money' do
+        subject { @charge.call }
+        it { should be_true }
+        it { should be_an_instance_of ActiveMerchant::Billing::BraintreeBlueGateway::Response }
+      end
+
+      context 'when money capture failed' do
+        before do
+          stub(@profile.send(:gateway)).capture do
+            stub(Object.new) do
+              success? { false }
+            end
+          end
+        end
+
+        subject { @charge }
+        it { should raise_error(SubscriptionError::CaptureFailed) }
+      end
+    end
+
+    context 'when authorization in the gateway failed' do
+      before do
+        stub(@profile.send(:gateway)).authorize(500, @profile.payment_auth_id) do
+          stub(Object.new) do
+            success? { false }
+          end
+        end
+      end
+
+      subject { @charge }
+      it { should raise_error(SubscriptionError::AuthorizationFailed) }
     end
   end
 end
