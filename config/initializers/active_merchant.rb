@@ -1,4 +1,4 @@
-configatron.gateway.configure_from_hash(YAML.load(File.read("#{Rails.root}/config/gateway.yml"))[Rails.env])
+configatron.gateway.configure_from_yaml "#{Rails.root}/config/gateway.yml", :hash => Rails.env
 
 ActiveMerchant::Billing::Base.mode = configatron.gateway.mode = :test if configatron.gateway.test?
 
