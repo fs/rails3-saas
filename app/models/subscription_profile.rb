@@ -1,9 +1,7 @@
 class SubscriptionProfile < ActiveRecord::Base
-  validates :payment_auth_id, :card_number, :card_type, :card_holder_name,
-    :card_expired_on, :presence => true
   validate :valid_card
 
-  before_validation :store_card!
+  before_save :store_card!
   before_destroy :unstore_card!
 
   def card

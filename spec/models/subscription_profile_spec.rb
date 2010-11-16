@@ -1,12 +1,6 @@
 require 'spec_helper'
 
 describe SubscriptionProfile do
-  it { should validate_presence_of :payment_auth_id }
-  it { should validate_presence_of :card_number }
-  it { should validate_presence_of :card_type }
-  it { should validate_presence_of :card_holder_name }
-  it { should validate_presence_of :card_expired_on }
-
   context 'card validation' do
     before do
       @profile = SubscriptionProfile.new(:card => Factory(:invalid_credit_card))
