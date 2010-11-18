@@ -1,5 +1,5 @@
 module ActiveMerchantHelpers
-  def stub_gateway_method_for(profile, method, stubs)
+  def stub_gateway_method(method, stubs)
     response = Object.new
 
     stub(response) do |r|
@@ -8,6 +8,15 @@ module ActiveMerchantHelpers
       end
     end
 
-    stub(profile.send(:gateway)).__send__(method) { response }
+    stub(configatron.gateway.current).__send__(method) { response }
+  end
+  
+  def stub_test_card_in_gateway_to(success_or_not)
+    stub_gateway_method(:authorize, :success? => true, :authorization => Object.new)
+    stub_gateway_method(:void, :success? => success_or_not)
+  end
+
+  def stub_store_card_in_gateway_to(success_or_not, token = 1)
+    stub_gateway_method(:store, :success? => success_or_not, :token => token)
   end
 end

@@ -89,7 +89,7 @@ describe SubscriptionProfile do
 
       context 'when store in the gateway failed' do
         before do
-          stub_gateway_method_for(@profile, :store, :success? => false)
+          stub_store_card_in_gateway_to(false)
         end
 
         subject { @saving }
@@ -142,7 +142,7 @@ describe SubscriptionProfile do
 
       context 'when money capture failed' do
         before do
-          stub_gateway_method_for(@profile, :capture, :success? => false)
+          stub_gateway_method(:capture, :success? => false)
         end
 
         subject { @charge }
@@ -152,7 +152,7 @@ describe SubscriptionProfile do
 
     context 'when authorization in the gateway failed' do
       before do
-        stub_gateway_method_for(@profile, :authorize, :success? => false)
+        stub_gateway_method(:authorize, :success? => false)
       end
 
       subject { @charge }
