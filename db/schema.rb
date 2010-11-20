@@ -19,9 +19,11 @@ ActiveRecord::Schema.define(:version => 20101111102953) do
   end
 
   create_table "subscription_plans", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string  "name"
+    t.integer "amount"
+    t.integer "user_limit"
+    t.integer "renewal_period", :default => 30
+    t.integer "trial_period",   :default => 30
   end
 
   create_table "subscription_profiles", :force => true do |t|
