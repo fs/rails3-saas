@@ -12,8 +12,12 @@ class SubscriptionPlan < ActiveRecord::Base
   def free?
     amount == 0
   end
+
+  def paid?
+    !free?
+  end
   
-  def without_trial?
-    trial_period == 0
+  def trial?
+    trial_period != 0 && paid?
   end
 end
