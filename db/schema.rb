@@ -42,6 +42,12 @@ ActiveRecord::Schema.define(:version => 20101111102953) do
     t.integer  "subscription_plan_id"
     t.text     "last_charge_error"
     t.datetime "next_renewal_at"
+    t.string   "plan_name"
+    t.integer  "amount"
+    t.integer  "user_limit"
+    t.integer  "renewal_period",       :default => 30
+    t.integer  "trial_period",         :default => 30
+    t.string   "state",                :default => "trial"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

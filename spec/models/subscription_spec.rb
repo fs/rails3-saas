@@ -1,6 +1,14 @@
 require 'spec_helper'
 
 describe Subscription do
+
+  before do
+    # disable real gateway calls
+    stub_store_card_in_gateway_to(true)
+    # gateway checks are valid
+    stub_test_card_in_gateway_to(true)
+  end
+
   it { should belong_to :account }
   it { should belong_to :plan }
   it { should have_one :profile }
@@ -8,19 +16,61 @@ describe Subscription do
   context 'validates' do
     it { should validate_presence_of :profile }
   end
-  
-  context 'existing subscription' do
-    it 'should return the amount in pennies'
-    it 'should return user limit'
+
+  context '#plan=(plan)' do
+    before { @subscription = Subscription.new }
+
+    context 'should set values from the assigned plan' do
+      before do
+        @plan              = Factory.build :basic_subscription_plan
+        @subscription.plan = @plan
+      end
+
+      it { @subscription.plan_name.should eql(@plan.name) }
+      it { @subscription.user_limit.should eql(@plan.user_limit) }
+      it { @subscription.amount.should eql(@plan.amount) }
+      it { @subscription.trial_period.should eql(@plan.trial_period) }
+      it { @subscription.renewal_period.should eql(@plan.renewal_period) }
+    end
+
+    context 'state' do
+      subject { @subscription }
+      
+      context 'when plan is Basic' do
+        before { @subscription.plan = Factory :basic_subscription_plan }
+        it { should be_trial }
+      end
+
+      context 'when plan is Free' do
+        before { @subscription.plan = Factory :free_subscription_plan }
+        it { should be_active }
+      end
+
+      context 'when plan without trial period' do
+        before { @subscription.plan = Factory :basic_without_trial_period_subscription_plan }
+        it { should be_active }
+      end
+    end
   end
 
-  context 'on initizlize' do
-    it "should set values from the assigned plan"
+  context '#plan' do
+    before { @subscription = Factory.build :subscription }
+    subject { @subscription.plan }
+
+    it { should be_an_instance_of SubscriptionPlan }
+    it { should be_readonly }
+
+    context 'should restore values from subscription' do
+      it { @subscription.plan.name.should eql(@subscription.plan_name) }
+      it { @subscription.plan.user_limit.should eql(@subscription.user_limit) }
+      it { @subscription.plan.amount.should eql(@subscription.amount) }
+      it { @subscription.plan.trial_period.should eql(@subscription.trial_period) }
+      it { @subscription.plan.renewal_period.should eql(@subscription.renewal_period) }
+    end
   end
 
   context 'on create' do
     before do
-      stub_store_card_in_gateway_to(true)
       @subscription = Subscription.new
     end
 
@@ -28,7 +78,7 @@ describe Subscription do
       before do
         stub_test_card_in_gateway_to(true)
 
-        @subscription.profile_attributes = { :card => Factory(:credit_card) }
+        @subscription.profile_attributes = {:card => Factory(:credit_card)}
         @subscription.save
       end
 
@@ -62,7 +112,7 @@ describe Subscription do
       before do
         stub_test_card_in_gateway_to(false)
 
-        @subscription.profile_attributes = { :card => Factory(:invalid_credit_card) }
+        @subscription.profile_attributes = {:card => Factory(:invalid_credit_card)}
         @subscription.save
       end
 

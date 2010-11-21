@@ -6,6 +6,14 @@ class SubscriptionPlan < ActiveRecord::Base
   validates :amount, :presence => true
 
   def to_param
-    name
+    name.to_param
+  end
+
+  def free?
+    amount == 0
+  end
+  
+  def without_trial?
+    trial_period == 0
   end
 end
