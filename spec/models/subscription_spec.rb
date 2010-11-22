@@ -15,6 +15,11 @@ describe Subscription do
 
   context 'validates' do
     it { should validate_presence_of :profile }
+    it { should validate_presence_of :plan_name }
+    it { should validate_presence_of :trial_period }
+    it { should validate_presence_of :renewal_period }
+    it { should validate_presence_of :amount }
+    it { should validate_presence_of :user_limit }
   end
 
   context '#plan=(plan)' do
@@ -22,7 +27,7 @@ describe Subscription do
 
     context 'should set values from the assigned plan' do
       before do
-        @plan              = Factory.build :basic_subscription_plan
+        @plan = Factory.build :basic_subscription_plan
         @subscription.plan = @plan
       end
 
@@ -35,7 +40,7 @@ describe Subscription do
 
     context 'state' do
       subject { @subscription }
-      
+
       context 'when plan is Basic' do
         before { @subscription.plan = Factory :basic_subscription_plan }
         it { should be_trial }
@@ -77,34 +82,73 @@ describe Subscription do
     context 'with valid credit card' do
       before do
         stub_test_card_in_gateway_to(true)
-
         @subscription.profile_attributes = {:card => Factory(:credit_card)}
-        @subscription.save
       end
 
-      subject { @subscription }
-      it { should be_persisted }
-
       context 'profile' do
+        before do
+          @subscription.plan = Factory :basic_subscription_plan
+          @subscription.save
+        end
+
         subject { @subscription.profile }
         it { should be_persisted }
       end
 
       context 'on paid plan' do
         context 'with trial period' do
-          it "should be created as a trial"
-          it "should be created with a specified renewal date"
+          before do
+            @plan = Factory :basic_subscription_plan
+            @subscription.plan = @plan
+            @subscription.save
+          end
+
+          subject { @subscription }
+
+          it { should be_persisted }
+          it { should be_trial }
+
+          context 'next renewal date at midnight' do
+            subject { @subscription.next_renewal_at.at_midnight }
+            it { should eql(@subscription.created_at.advance(:days => @plan.trial_period).at_midnight) }
+          end
         end
 
         context 'without trial period' do
-          it "should be created as a active"
-          it "should be created with a renewal date for today"
+          before do
+            @plan = Factory :basic_without_trial_period_subscription_plan
+            @subscription.plan = @plan
+            @subscription.save
+          end
+
+          subject { @subscription }
+
+          it { should be_persisted }
+          it { should be_active }
+
+          context 'next renewal date at midnight' do
+            subject { @subscription.next_renewal_at.at_midnight }
+            it { should be_today }
+          end
         end
       end
 
       context 'on free plan' do
-        it "should be created as active"
-        it "should be created with a specified renewal date"
+        before do
+          @plan = Factory :free_subscription_plan
+          @subscription.plan = @plan
+          @subscription.save
+        end
+
+        subject { @subscription }
+
+        it { should be_persisted }
+        it { should be_active }
+
+        context 'next renewal date at midnight' do
+          subject { @subscription.next_renewal_at.at_midnight }
+          it { should eql(@subscription.created_at.advance(:days => @plan.renewal_period).at_midnight) }
+        end
       end
     end
 
@@ -163,6 +207,22 @@ describe Subscription do
       it 'should not update next renew date'
       it 'should set account status in the error state'
       it 'should record transaction'
+    end
+  end
+
+  context 'on update' do
+    it 'should not change next renewal date'
+
+    context 'to free plan' do
+      it 'should activate profile'
+    end
+
+    context 'to basic plan' do
+      context 'from trial period' do
+      end
+    end
+
+    context 'to plan without trial period' do
     end
   end
 
